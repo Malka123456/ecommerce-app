@@ -3,29 +3,58 @@ package service
 import (
 	"ecommerce-app/internal/domain"
 	"ecommerce-app/internal/dto"
+	"ecommerce-app/internal/repository"
+	"errors"
+	"fmt"
 	"log"
 )
 
 type UserService struct {
+	Repo repository.UserRepository
 
 }
 
 func (s UserService) Signup(input dto.UserSignup) (string, error) {
 
 	log.Println(input)
-	return "this_is_my_token_as_of_now",nil
+
+	user, err := s.Repo.CreateUser(domain.User{
+		Email:    input.Email,
+		Password: input.Password,
+		Phone:    input.Phone,
+  })
+
+	//generate token
+  log.Println(user)
+
+	userInfo := fmt.Sprintf("%v, %v, %v", user.ID, user.Email, user.UserType)
+
+
+  // call db to create user
+  return userInfo, err
 
 }
 
 func (s UserService) findUserByEmail(email string) (*domain.User, error) {
 	//perform some db operation
 	//business logic
-	return nil, nil
+	 user, err := s.Repo.FindUser(email)
+
+
+	return &user, err
 }
 
-func (s UserService) Login(input any) (string, error) {
+func (s UserService) Login(email string, password string) (string, error) {
 
-	return "",nil
+	user, err := s.findUserByEmail(email)
+	if err != nil {
+		return "", errors.New("user does not exist with the provided email id")
+	}
+
+	//compared password and genrate token
+
+
+	return user.Email, nil
 
 }
 

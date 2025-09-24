@@ -1,0 +1,3 @@
+to enter in psql write below command:
+
+  psql -h localhost -p 5428 -U root -d online-shopping
